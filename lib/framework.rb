@@ -2,29 +2,24 @@
 
 require "zeitwerk"
 
-module Framework
-  @root = nil
+class Framework
+  VERSION = "0.1.0"
 
-  def self.root
-    @root
+  attr_reader :root
+
+  def initialize(root:)
+    @root = root
+    @loader = setup_loader
   end
 
-  def self.root=(path)
-    @root = path
-  end
+  private
 
-  def self.setup(root_path = nil)
-    self.root = root_path || Dir.pwd
-    setup_loader
-    self
-  end
-
-  def self.setup_loader
+  def setup_loader
     loader = Zeitwerk::Loader.new
     loader.push_dir(File.join(root, "lib"))
     loader.ignore(File.join(root, "lib", "framework.rb"))
     loader.setup
     loader.eager_load # Using eager loading as specified in the requirements
+    loader
   end
-  private_class_method :setup_loader
 end

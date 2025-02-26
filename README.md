@@ -27,20 +27,63 @@ bundle install
 
 ### Usage
 
-To use the framework in your project, require it and set it up:
+Create a main Ruby file that loads your framework and application:
 
 ```ruby
-require_relative 'path/to/ruby-framework/lib/framework'
+#!/usr/bin/env ruby
+# frozen_string_literal: true
 
-# Initialize the framework with your project's root path
-Framework.setup(File.expand_path('..', __dir__))
+# Get the absolute path to the project root
+project_root = File.expand_path("..", __dir__)
+
+# Add the lib directory to the load path
+$LOAD_PATH.unshift(File.join(project_root, "lib"))
+
+# Require the framework
+require "framework"
+framework = Framework.new(root: project_root)
+
+# Run your application
+MyProject::Hello.world
 ```
 
 ## How It Works
 
+### Framework Implementation
+
+The framework provides class-based initialization with Zeitwerk autoloading:
+
+```ruby
+# frozen_string_literal: true
+
+require "zeitwerk"
+
+class Framework
+  VERSION = "0.1.0"
+
+  attr_reader :root
+
+  def initialize(root:)
+    @root = root
+    @loader = setup_loader
+  end
+
+  private
+
+  def setup_loader
+    loader = Zeitwerk::Loader.new
+    loader.push_dir(File.join(root, "lib"))
+    loader.ignore(File.join(root, "lib", "framework.rb"))
+    loader.setup
+    loader.eager_load # Using eager loading as specified in the requirements
+    loader
+  end
+end
+```
+
 ### Autoloading
 
-The framework uses Zeitwerk for autoloading your classes and modules. When you call `Framework.setup`, it configures Zeitwerk to eagerly load all Ruby files in your project's `lib` directory (except for `framework.rb` itself).
+The framework uses Zeitwerk for autoloading your classes and modules. When you create a new `Framework` instance, it configures Zeitwerk to eagerly load all Ruby files in your project's `lib` directory (except for `framework.rb` itself).
 
 Classes and modules are expected to follow Ruby's naming conventions, which Zeitwerk enforces. For example:
 - A file at `lib/my_module/my_class.rb` should define `MyModule::MyClass`
