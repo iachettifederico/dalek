@@ -5,25 +5,28 @@ A lightweight, flexible Ruby framework designed to provide a structured setup fo
 ## Features
 
 - **Autoloading**: Uses Zeitwerk in eager-load mode for efficient file management
+- **Testing**: Preconfigured with RSpec
+- **Code Style**: Enforces standards using Rubocop
+- **Initializers**: Dedicated directory for setup code
+- **CLI with Generators**: Similar to Rails generators
+- **Environment Support**: Configuration via DotEnv
 - **Minimal Dependencies**: Only includes essential gems
 - **Pure Ruby Configuration**: No YAML or other config files, just Ruby
+- **Docker Support**: Included Docker and Docker Compose files
 
 ## Getting Started
 
 ### Installation
 
-1. Clone this repository into your project:
+Create a new project using the generator:
 
 ```bash
-git clone https://github.com/username/ruby-framework.git
+bin/dalek-new PROJECT_NAME [options]
 ```
 
-2. Install dependencies:
-
-```bash
-cd ruby-framework
-bundle install
-```
+Options:
+- `-o, --output-dir DIR`: Output directory (default: current directory)
+- `-s, --source-dir DIR`: Source directory (for local development)
 
 ### Usage
 
@@ -91,15 +94,15 @@ Classes and modules are expected to follow Ruby's naming conventions, which Zeit
 
 ### Project Structure
 
-The framework follows a minimal structure:
+The framework follows a structured organization:
 
 ```
-ruby-framework/
-├── lib/
-│   ├── framework.rb              # Main loader
-│   └── framework/
-│       └── version.rb            # Version information
-└── Gemfile                       # Dependencies
+my_project/
+├── bin
+│   └── dalek-new
+├── Gemfile
+├── lib
+└── README.md
 ```
 
 ## Contributing
