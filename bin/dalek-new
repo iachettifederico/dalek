@@ -1,0 +1,54 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require "awesome_print"
+AwesomePrint.defaults = {
+  indent: 2,
+  index:  false,
+}
+
+require "optparse"
+require "fileutils"
+require "pathname"
+
+options = {
+  output_dir: Pathname.new("."),
+}
+
+parser = OptionParser.new do |opts|
+  opts.banner = "Usage: dalek-new PROJECT_NAME [options]"
+
+  opts.on("-o", "--output-dir DIR", "Output directory (default: current directory)") do |dir|
+    options[:output_dir] = Pathname.new(dir)
+  end
+
+  opts.on("-s", "--source-dir DIR", "Source directory (for local development)") do |dir|
+    options[:source_dir] = Pathname.new(dir)
+  end
+end
+
+parser.parse!
+
+def indent(text, spaces: 2)
+  text.each_line.map { |line| " " * spaces + line }.join
+end
+
+if ARGV.empty?
+  puts "Error: Project name is required"
+  puts parser
+  exit 1
+end
+
+project_name = ARGV[0]
+source_dir = options[:source_dir] || Pathname.new(__dir__).join("..")
+target_dir = options[:output_dir].join(project_name)
+
+puts "Creating projecw: #{project_name.blue}"
+FileUtils.mkdir_p(target_dir.expand_path)
+
+puts " - Creating target directory: #{target_dir.expand_path.to_s.yellow}"
+FileUtils.cp_r(Dir.glob("#{source_dir.expand_path}/*"), target_dir.expand_path)
+
+puts " - Copying project files: #{source_dir.expand_path.to_s.yellowish} -> #{target_dir.expand_path.to_s.yellow}"
+puts indent(`tree #{target_dir}`, spaces: 4).yellowish
+puts "Project created successfully!".green
